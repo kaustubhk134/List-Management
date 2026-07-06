@@ -28,7 +28,10 @@ const Home = () => {
             );
             setCurrentPage(page);
             setPageSize(limit);
-        } finally {
+        }catch (error) {
+            console.log(error);
+            message.error("Failed to fetch data");
+        }finally {
             setLoading(false);
         }
     };
