@@ -6,13 +6,17 @@ const ListTable = ({
     lists,
     loading,
     fetchLists,
-    setEditingRecord
+    currentPage,
+    pageSize,
+    totalRecords,
+    setEditingRecord,
 }) => {
     const handleSoftDelete = async (id) => {
         try {
             await api.patch(`/list/soft-delete/${id}`);
             message.success("List soft deleted successfully");
-            fetchLists();
+            // fetchLists();
+            fetchLists(currentPage,pageSize);
         } catch (error) {
             console.error(error);
             message.error("Failed to delete");
@@ -23,7 +27,8 @@ const ListTable = ({
         try {
             await api.delete(`/list/${id}`);
             message.success("List deleted permanently");
-            fetchLists();
+            // fetchLists();
+            fetchLists(currentPage,pageSize);
         } catch (error) {
             console.error(error);
             message.error("Failed to delete");
@@ -102,7 +107,16 @@ const ListTable = ({
             columns={columns}
             dataSource={lists}
             loading={loading}
-            bordered
+            pagination={{
+                current: currentPage,
+                pageSize,
+                total: totalRecords,
+                showSizeChanger: true,
+                pageSizeOptions:["5","10","20"],
+                onChange:(page,size)=>{
+                    fetchLists(page,size);
+                }
+            }}
         />
     );
 };

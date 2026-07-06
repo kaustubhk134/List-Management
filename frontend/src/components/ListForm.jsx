@@ -36,6 +36,7 @@ const ListForm = ({
                     }
 
                     await fetchLists();
+                    // fetchLists(currentPage,pageSize);
                     resetForm();
                     setEditingRecord(null);
 
