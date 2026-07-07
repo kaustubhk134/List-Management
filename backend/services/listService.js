@@ -4,11 +4,15 @@ const createList = async (data) => {
     return await List.create(data);
 };
 
-const getAllLists = async () => {
-    return await List.findAll({
+const getAllLists = async (page, limit) => {
+    const offset = (page - 1) * limit;
+    return await List.findAndCountAll({
         where: {
             isDeleted: false,
         },
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]],
     });
 };
 

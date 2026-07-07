@@ -18,11 +18,20 @@ const createList = async (req, res, next) => {
 // Get All
 const getAllLists = async (req, res, next) => {
   try {
-    const lists = await listService.getAllLists();
+    // const lists = await listService.getAllLists();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const result = await listService.getAllLists(page, limit);
 
     res.status(200).json({
       success: true,
-      data: lists,
+      data: result.rows,
+      pagination: {
+          page,
+          limit,
+          totalRecords: result.count,
+          totalPages: Math.ceil(result.count / limit),
+        },
     });
   } catch (error) {
     next(error);

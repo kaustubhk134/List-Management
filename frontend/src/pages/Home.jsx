@@ -7,24 +7,37 @@ import { message } from "antd";
 const Home = () => {
 
     const [lists, setLists] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalRecords, setTotalRecords] = useState(0);
+
     const [loading, setLoading] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
-    const fetchLists = async () => {
-
-        try {
-            setLoading(true);
-            const response = await api.get("/list");
-            setLists(response.data.data);
-        } catch (error) {
-            console.log(error);
-            message.error("Failed to fetch data");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetchLists = async (
+        page = currentPage,
+        limit = pageSize
+        ) => {
+            try {
+                setLoading(true);
+                const response = await api.get(
+                    `/list?page=${page}&limit=${limit}`
+                );
+                setLists(response.data.data);
+                setTotalRecords(
+                    response.data.pagination.totalRecords
+                );
+                setCurrentPage(page);
+                setPageSize(limit);
+            } catch (error) {
+                console.log(error);
+                message.error("Failed to fetch data");
+            } finally {
+                setLoading(false);
+            }
+        };
 
     useEffect(() => {
-        fetchLists();
+        fetchLists(currentPage, pageSize);
     }, []);
 
     return (
@@ -47,6 +60,9 @@ const Home = () => {
                         lists={lists}
                         loading={loading}
                         fetchLists={fetchLists}
+                        currentPage={currentPage}
+                        pageSize={pageSize}
+                        totalRecords={totalRecords}
                         setEditingRecord={setEditingRecord}
                     />
                 </div>
