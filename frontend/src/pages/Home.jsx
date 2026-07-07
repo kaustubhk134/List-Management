@@ -16,27 +16,28 @@ const Home = () => {
     const fetchLists = async (
         page = currentPage,
         limit = pageSize
-        ) => {
-            try {
-                setLoading(true);
-                const response = await api.get(
-                    `/list?page=${page}&limit=${limit}`
-                );
-                setLists(response.data.data);
-                setTotalRecords(
-                    response.data.pagination.totalRecords
-                );
-                setCurrentPage(page);
-                setPageSize(limit);
-            } catch (error) {
-                console.log(error);
-                message.error("Failed to fetch data");
-            } finally {
-                setLoading(false);
-            }
-        };
+    ) => {
+        try {
+            setLoading(true);
+            const response = await api.get(
+                `/list?page=${page}&limit=${limit}`
+            );
+            setLists(response.data.data);
+            setTotalRecords(
+                response.data.pagination.totalRecords
+            );
+            setCurrentPage(page);
+            setPageSize(limit);
+        }catch (error) {
+            console.log(error);
+            message.error("Failed to fetch data");
+        }finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
+        // fetchLists();
         fetchLists(currentPage, pageSize);
     }, []);
 
