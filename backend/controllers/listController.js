@@ -21,7 +21,8 @@ const getAllLists = async (req, res, next) => {
     // const lists = await listService.getAllLists();
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-    const result = await listService.getAllLists(page, limit);
+    const search = req.query.search || "";
+    const result = await listService.getAllLists(page, limit, search);
 
     res.status(200).json({
       success: true,

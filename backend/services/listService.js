@@ -1,15 +1,28 @@
 const List = require("../models/listModel");
+const { Op } = require("sequelize");
 
 const createList = async (data) => {
     return await List.create(data);
 };
 
-const getAllLists = async (page, limit) => {
+const getAllLists = async (page, limit, search) => {
     const offset = (page - 1) * limit;
+
+    // Base condition: only fetch items that are not soft-deleted
+    const whereCondition = {
+        isDeleted: false,
+    };
+
+    // If a search term exists, filter by title OR description (case-insensitive)
+    if (search) {
+        whereCondition[Op.or] = [
+            { title: { [Op.iLike]: `%${search}%` } },
+            { description: { [Op.iLike]: `%${search}%` } }
+        ];
+    }
+
     return await List.findAndCountAll({
-        where: {
-            isDeleted: false,
-        },
+        where: whereCondition,
         limit,
         offset,
         order: [["createdAt", "DESC"]],
