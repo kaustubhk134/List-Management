@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import ListForm from "../components/ListForm";
 import ListTable from "../components/ListTable";
 import api from "../services/api";
-import { message } from "antd";
+import { message, Input } from "antd";
+
+const { Search } = Input;
 
 const Home = () => {
 
@@ -10,17 +12,19 @@ const Home = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalRecords, setTotalRecords] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
     const fetchLists = async (
         page = currentPage,
-        limit = pageSize
+        limit = pageSize,
+        search = searchQuery
     ) => {
         try {
             setLoading(true);
             const response = await api.get(
-                `/list?page=${page}&limit=${limit}`
+                `/list?page=${page}&limit=${limit}&search=${search}`
             );
             setLists(response.data.data);
             setTotalRecords(
@@ -37,9 +41,13 @@ const Home = () => {
     };
 
     useEffect(() => {
-        // fetchLists();
-        fetchLists(currentPage, pageSize);
+        fetchLists(1, pageSize, searchQuery); // Reset to page 1 on mount/search
     }, []);
+
+    const handleSearch = (value) => {
+        setSearchQuery(value);
+        fetchLists(1, pageSize, value); // Always reset to page 1 when searching
+    };
 
     return (
 
@@ -56,6 +64,19 @@ const Home = () => {
                 />
 
                 <div className="mt-10">
+                    {/* Added Search Bar */}
+                    <div className="mb-4 max-w-md">
+                        <Search
+                            placeholder="Search by title or description..."
+                            allowClear
+                            enterButton="Search"
+                            size="large"
+                            onSearch={handleSearch}
+                            onChange={(e) => {
+                                if (!e.target.value) handleSearch(""); // Triggers fetch clear when user hits 'x'
+                            }}
+                        />
+                    </div>
 
                     <ListTable
                         lists={lists}
@@ -65,6 +86,7 @@ const Home = () => {
                         pageSize={pageSize}
                         totalRecords={totalRecords}
                         setEditingRecord={setEditingRecord}
+                        searchQuery={searchQuery} // Pass down searchQuery
                     />
                 </div>
             </div>

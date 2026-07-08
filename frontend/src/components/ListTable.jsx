@@ -9,7 +9,8 @@ const ListTable = ({
     currentPage,
     pageSize,
     totalRecords,
-    setEditingRecord
+    setEditingRecord,
+    searchQuery // 1. Destructure the search query prop
 }) => {
     const handleSoftDelete = async (id) => {
         try {
@@ -125,7 +126,7 @@ const ListTable = ({
                 showSizeChanger: true,
                 pageSizeOptions:["5","10","20"],
                 onChange:(page,size)=>{
-                    fetchLists(page,size);
+                    fetchLists(page, size, searchQuery);
                 }
             }}
         />
